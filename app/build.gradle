@@ -7,6 +7,7 @@ android {
 	defaultConfig {
 		applicationId "io.github.mudassir.youtubecacher"
 		minSdkVersion 21
+		multiDexEnabled true
 		targetSdkVersion 23
 		versionCode 1
 		versionName "1.0"
@@ -27,5 +28,5 @@ android {
 
 dependencies {
 	compile 'com.android.support:appcompat-v7:23.4.0'
-	compile 'com.github.axet:vget:1.1.27'
+	compile 'com.github.axet:vget:1.1.29'
 }
