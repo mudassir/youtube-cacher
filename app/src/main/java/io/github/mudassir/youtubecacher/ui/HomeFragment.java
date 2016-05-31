@@ -3,32 +3,91 @@ package io.github.mudassir.youtubecacher.ui;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.github.mudassir.youtubecacher.R;
+import io.github.mudassir.youtubecacher.util.YoutubeScraper;
 
 /**
  * First fragment that the user sees (i.e., the home screen)
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements BaseRecyclerAdapter.RecyclerClickListener, YoutubeScraper.ScrapeReceiver {
 
+	private List<String> mIds;
 	private RecyclerView mRecyclerView;
+	private WebView mWebView;
 
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View root = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_home, container, false);
+		mRecyclerView = (RecyclerView) root.findViewById(R.id.home_recycler);
+		mWebView = (WebView) root.findViewById(R.id.home_web_view);
 
-		mRecyclerView = (RecyclerView) root.findViewById(R.id.recycler_home);
-
-		return super.onCreateView(inflater, container, savedInstanceState);
+		return root;
 	}
 
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+
+		YoutubeScraper.scrape(getActivity(), mWebView, this);
+	}
+
+	@Override
+	public void onClick(View view, int position) {
+		android.widget.Toast.makeText(getActivity(), mIds.get(position), android.widget.Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public void onScrapeReceived(List<String> idList) {
+		mIds = idList;
+		mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+		mRecyclerView.setAdapter(new HomeAdapter(mIds, this));
+	}
+}
+
+class HomeAdapter extends BaseRecyclerAdapter<String, HomeViewHolder> {
+
+	public HomeAdapter(@Nullable List<String> data, @Nullable RecyclerClickListener listener) {
+		super(data, listener);
+	}
+
+	@Override
+	public HomeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		return new HomeViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_home, parent, false), listener);
+	}
+
+	@Override
+	public void onBindViewHolder(HomeViewHolder holder, int position) {
+		holder.textView.setText("Pos = " + position);
+		Glide.with(holder.imageView.getContext())
+				.load(YoutubeScraper.THUMBNAIL_PREFIX_URL + data.get(position) + YoutubeScraper.THUMBNAIL_SUFFIX_URL)
+				.into(holder.imageView);
+	}
+}
+
+class HomeViewHolder extends BaseRecyclerAdapter.BaseViewHolder {
+
+	TextView textView;
+	ImageView imageView;
+
+	public HomeViewHolder(View view, @Nullable BaseRecyclerAdapter.RecyclerClickListener listener) {
+		super(view, listener);
+		textView = (TextView) view.findViewById(R.id.cell_home_txt);
+		imageView = (ImageView) view.findViewById(R.id.cell_home_img);
 	}
 }
