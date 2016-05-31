@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.mudassir.youtubecacher.R;
+import io.github.mudassir.youtubecacher.util.VideoString;
 import io.github.mudassir.youtubecacher.util.YoutubeScraper;
 
 /**
@@ -26,7 +27,7 @@ import io.github.mudassir.youtubecacher.util.YoutubeScraper;
  */
 public class HomeFragment extends Fragment implements BaseRecyclerAdapter.RecyclerClickListener, YoutubeScraper.ScrapeReceiver {
 
-	private List<String> mIds;
+	private List<VideoString> mVideoList;
 	private RecyclerView mRecyclerView;
 	private WebView mWebView;
 
@@ -49,20 +50,21 @@ public class HomeFragment extends Fragment implements BaseRecyclerAdapter.Recycl
 
 	@Override
 	public void onClick(View view, int position) {
-		android.widget.Toast.makeText(getActivity(), mIds.get(position), android.widget.Toast.LENGTH_SHORT).show();
+		android.widget.Toast.makeText(getActivity(), YoutubeScraper.VIDEO_PREFIX_URL + mVideoList.get(position).id, android.widget.Toast.LENGTH_SHORT).show();
+		// TODO replace with actually downloading the file
 	}
 
 	@Override
-	public void onScrapeReceived(List<String> idList) {
-		mIds = idList;
+	public void onScrapeReceived(List<VideoString> idList) {
+		mVideoList = idList;
 		mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-		mRecyclerView.setAdapter(new HomeAdapter(mIds, this));
+		mRecyclerView.setAdapter(new HomeAdapter(mVideoList, this));
 	}
 }
 
-class HomeAdapter extends BaseRecyclerAdapter<String, HomeViewHolder> {
+class HomeAdapter extends BaseRecyclerAdapter<VideoString, HomeViewHolder> {
 
-	public HomeAdapter(@Nullable List<String> data, @Nullable RecyclerClickListener listener) {
+	public HomeAdapter(@Nullable List<VideoString> data, @Nullable RecyclerClickListener listener) {
 		super(data, listener);
 	}
 
@@ -73,9 +75,9 @@ class HomeAdapter extends BaseRecyclerAdapter<String, HomeViewHolder> {
 
 	@Override
 	public void onBindViewHolder(HomeViewHolder holder, int position) {
-		holder.textView.setText("Pos = " + position);
+		holder.textView.setText(data.get(position).title);
 		Glide.with(holder.imageView.getContext())
-				.load(YoutubeScraper.THUMBNAIL_PREFIX_URL + data.get(position) + YoutubeScraper.THUMBNAIL_SUFFIX_URL)
+				.load(YoutubeScraper.THUMBNAIL_PREFIX_URL + data.get(position).id + YoutubeScraper.THUMBNAIL_SUFFIX_URL)
 				.into(holder.imageView);
 	}
 }

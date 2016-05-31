@@ -20,13 +20,14 @@ import java.util.List;
 public class YoutubeScraper {
 
 	public interface ScrapeReceiver {
-		void onScrapeReceived(List<String> idList);
+		void onScrapeReceived(List<VideoString> idList);
 	}
 
+	public static final String ID_PREFIX = "/watch?v=";
 	public static final String THUMBNAIL_PREFIX_URL = "https://i.ytimg.com/vi/";
 	public static final String THUMBNAIL_SUFFIX_URL = "/mqdefault.jpg";
 	public static final String TRENDING_FEED_URL = "https://m.youtube.com/feed/trending";
-	public static final String VIDEO_PREFIX_URL = "https://www.youtube.com/watch?v=";
+	public static final String VIDEO_PREFIX_URL = "https://www.youtube.com" + ID_PREFIX;
 
 	public static void scrape(final Context context, final WebView webView, final ScrapeReceiver receiver) {
 
@@ -47,19 +48,32 @@ public class YoutubeScraper {
 								new ValueCallback<String>() {
 									@Override
 									public void onReceiveValue(String html) {
+										List<VideoString> idList = new ArrayList<>();
 										html = StringEscapeUtils.unescapeJava(html);
-										List<String> idList = new ArrayList<>();
+
 										for(Element element : Jsoup.parse(html).select("a")) {
-											if (element.attr("href").contains("/watch?v="))
-												idList.add(element.attr("href").replace("/watch?v=",""));
+											String href = element.attr("href");
+
+											if (href.contains(ID_PREFIX)) {
+												// Stripping title
+												String title = element.attr("aria-label");
+												title = title.substring(0, title.lastIndexOf(" - "));
+												title = title.substring(0, title.lastIndexOf(" - "));
+
+												idList.add(new VideoString(
+														title,
+														href.replace(ID_PREFIX, "")
+												));
+											}
 										}
+
 										receiver.onScrapeReceived(idList);
 										webView.destroy();
 									}
 								}
 						);
 					}
-				}, 1000);
+				}, 500);
 			}
 		});
 
