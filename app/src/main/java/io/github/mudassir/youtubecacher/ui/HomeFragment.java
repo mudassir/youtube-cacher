@@ -1,8 +1,11 @@
 package io.github.mudassir.youtubecacher.ui;
 
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -44,7 +47,6 @@ public class HomeFragment extends Fragment implements BaseRecyclerAdapter.Recycl
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-
 		YoutubeScraper.scrape(getActivity(), mWebView, this);
 	}
 
@@ -58,7 +60,30 @@ public class HomeFragment extends Fragment implements BaseRecyclerAdapter.Recycl
 	public void onScrapeReceived(List<VideoString> idList) {
 		mVideoList = idList;
 		mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+		mRecyclerView.setHasFixedSize(true);
 		mRecyclerView.setAdapter(new HomeAdapter(mVideoList, this));
+
+		// Add the divider
+		mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+			@Override
+			public void onDraw(final Canvas c, final RecyclerView parent, final RecyclerView.State state) {
+				final Drawable divider = ResourcesCompat.getDrawable(getResources(), R.drawable.divider, null);
+
+				// Don't show the divider underneath the first and last cells
+				for (int i = 0; i < parent.getChildCount() - 1; i++) {
+					final View child = parent.getChildAt(i);
+					divider.setBounds(0, child.getBottom(), parent.getWidth(), child.getBottom() + divider.getIntrinsicHeight());
+					divider.draw(c);
+				}
+
+				/*
+				 * In the event that padding must be preserved:
+				 * final int padding = (int) getResources().getDimension(R.dimen.dividerPadding);
+				 * final int left = parent.getPaddingLeft() + padding;
+				 * final int right = parent.getWidth() - parent.getPaddingRight() + padding;
+				*/
+			}
+		});
 	}
 }
 
