@@ -10,8 +10,7 @@ import java.util.List;
 /**
  * A class that takes care of some boilerplate code with RecyclerView Adapters and ViewHolders.
  */
-public abstract class BaseRecyclerAdapter<E extends Object, T extends BaseRecyclerAdapter.BaseViewHolder>
-		extends RecyclerView.Adapter<T> {
+public abstract class BaseRecyclerAdapter<E extends Object, T extends BaseRecyclerAdapter.BaseViewHolder> extends RecyclerView.Adapter<T> {
 
 	public interface RecyclerClickListener {
 		void onClick(View view, int position);

@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * File that scrapes the YouTube homepage for videos
  *
- * Solution adapted from http://stackoverflow.com/a/4892013
+ * Solution adapted from https://stackoverflow.com/a/4892013
  */
 public class YoutubeScraper {
 
@@ -68,7 +68,7 @@ public class YoutubeScraper {
 										}
 
 										receiver.onScrapeReceived(idList);
-										webView.destroy();
+										webView.destroy(); // Don't need it anymore
 									}
 								}
 						);
