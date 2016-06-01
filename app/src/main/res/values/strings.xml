@@ -1,3 +1,4 @@
 <resources>
 	<string name="app_name">Youtube Cacher</string>
+	<string name="bullet_separator">•</string>
 </resources>

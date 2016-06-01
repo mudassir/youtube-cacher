@@ -1,11 +1,14 @@
 package io.github.mudassir.youtubecacher.ui;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,11 +19,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import java.util.List;
 
 import io.github.mudassir.youtubecacher.R;
-import io.github.mudassir.youtubecacher.util.VideoString;
+import io.github.mudassir.youtubecacher.obj.VideoMetadata;
 import io.github.mudassir.youtubecacher.util.YoutubeScraper;
 
 /**
@@ -28,7 +32,7 @@ import io.github.mudassir.youtubecacher.util.YoutubeScraper;
  */
 public class HomeFragment extends Fragment implements BaseRecyclerAdapter.RecyclerClickListener, YoutubeScraper.ScrapeReceiver {
 
-	private List<VideoString> mVideoList;
+	private List<VideoMetadata> mVideoList;
 	private RecyclerView mRecyclerView;
 	private WebView mWebView;
 
@@ -50,12 +54,12 @@ public class HomeFragment extends Fragment implements BaseRecyclerAdapter.Recycl
 
 	@Override
 	public void onClick(View view, int position) {
-		android.widget.Toast.makeText(getActivity(), YoutubeScraper.VIDEO_PREFIX_URL + mVideoList.get(position).id, android.widget.Toast.LENGTH_SHORT).show();
+		android.widget.Toast.makeText(getActivity(), YoutubeScraper.VIDEO_PREFIX_URL + mVideoList.get(position).getId(), android.widget.Toast.LENGTH_SHORT).show();
 		// TODO replace with actually downloading the file
 	}
 
 	@Override
-	public void onScrapeReceived(List<VideoString> idList) {
+	public void onScrapeReceived(List<VideoMetadata> idList) {
 		mVideoList = idList;
 		mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 		mRecyclerView.setHasFixedSize(true);
@@ -85,9 +89,9 @@ public class HomeFragment extends Fragment implements BaseRecyclerAdapter.Recycl
 	}
 }
 
-class HomeAdapter extends BaseRecyclerAdapter<VideoString, HomeViewHolder> {
+class HomeAdapter extends BaseRecyclerAdapter<VideoMetadata, HomeViewHolder> {
 
-	public HomeAdapter(@Nullable List<VideoString> data, @Nullable RecyclerClickListener listener) {
+	public HomeAdapter(@Nullable List<VideoMetadata> data, @Nullable RecyclerClickListener listener) {
 		super(data, listener);
 	}
 
@@ -97,22 +101,42 @@ class HomeAdapter extends BaseRecyclerAdapter<VideoString, HomeViewHolder> {
 	}
 
 	@Override
-	public void onBindViewHolder(HomeViewHolder holder, int position) {
-		holder.textView.setText(data.get(position).title);
-		Glide.with(holder.imageView.getContext())
-				.load(YoutubeScraper.THUMBNAIL_PREFIX_URL + data.get(position).id + YoutubeScraper.THUMBNAIL_SUFFIX_URL)
-				.into(holder.imageView);
+	public void onBindViewHolder(final HomeViewHolder holder, int position) {
+		VideoMetadata info = data.get(position);
+		holder.title.setText(info.getTitle());
+		Glide.with(holder.videoThumbnail.getContext())
+				.load(YoutubeScraper.THUMBNAIL_PREFIX_URL + info.getId() + YoutubeScraper.THUMBNAIL_SUFFIX_URL)
+				.into(holder.videoThumbnail);
+		Glide.with(holder.channelThumbnail.getContext())
+				.load(info.getChannelThumbnail())
+				.asBitmap()
+				.centerCrop()
+				.into(new BitmapImageViewTarget(holder.channelThumbnail) {
+					@Override
+					protected void setResource(Bitmap resource) {
+						RoundedBitmapDrawable circularBitmapDrawable =
+								RoundedBitmapDrawableFactory.create(holder.channelThumbnail.getContext().getResources(), resource);
+						circularBitmapDrawable.setCircular(true);
+						holder.channelThumbnail.setImageDrawable(circularBitmapDrawable);
+					}
+				});
+		holder.subTitle.setText(info.getChannel() + "\n"
+				+ info.getViews() + " " + holder.channelThumbnail.getContext().getString(R.string.bullet_separator) + " " + info.getPostedTime());
 	}
 }
 
 class HomeViewHolder extends BaseRecyclerAdapter.BaseViewHolder {
 
-	TextView textView;
-	ImageView imageView;
+	TextView title;
+	ImageView videoThumbnail;
+	ImageView channelThumbnail;
+	TextView subTitle;
 
 	public HomeViewHolder(View view, @Nullable BaseRecyclerAdapter.RecyclerClickListener listener) {
 		super(view, listener);
-		textView = (TextView) view.findViewById(R.id.cell_home_txt);
-		imageView = (ImageView) view.findViewById(R.id.cell_home_img);
+		title = (TextView) view.findViewById(R.id.title);
+		videoThumbnail = (ImageView) view.findViewById(R.id.video_thumbnail);
+		channelThumbnail = (ImageView) view.findViewById(R.id.channel_thumbnail);
+		subTitle = (TextView) view.findViewById(R.id.subtitle);
 	}
 }
