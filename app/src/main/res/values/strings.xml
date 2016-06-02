@@ -1,5 +1,5 @@
 <resources>
-	<string name="app_name">Youtube Cacher</string>
+	<string name="app_name">YouTube Cacher</string>
 	<string name="bullet_separator">•</string>
 	<string name="paste_title">Paste</string>
 	<string name="paste_prompt">Paste the URL of the video here</string>

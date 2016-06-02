@@ -24,7 +24,8 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import java.util.List;
 
 import io.github.mudassir.youtubecacher.R;
-import io.github.mudassir.youtubecacher.obj.VideoMetadata;
+import io.github.mudassir.youtubecacher.model.DownloadListener;
+import io.github.mudassir.youtubecacher.model.VideoMetadata;
 import io.github.mudassir.youtubecacher.util.YoutubeScraper;
 
 /**
@@ -54,8 +55,7 @@ public class HomeFragment extends Fragment implements BaseRecyclerAdapter.Recycl
 
 	@Override
 	public void onClick(View view, int position) {
-		android.widget.Toast.makeText(getActivity(), YoutubeScraper.VIDEO_PREFIX_URL + mVideoList.get(position).getId(), android.widget.Toast.LENGTH_SHORT).show();
-		// TODO replace with actually downloading the file
+		((DownloadListener) getActivity()).download(mVideoList.get(position).getId());
 	}
 
 	@Override

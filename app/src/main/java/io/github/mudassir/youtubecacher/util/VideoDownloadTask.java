@@ -1,11 +1,10 @@
 package io.github.mudassir.youtubecacher.util;
 
+import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Environment;
 
 import com.github.axet.vget.VGet;
 
-import java.io.File;
 import java.net.URL;
 
 /**
@@ -15,13 +14,17 @@ import java.net.URL;
  */
 public class VideoDownloadTask extends AsyncTask<String, Void, Void> {
 
+	private Context mContext;
+
+	public VideoDownloadTask(Context context) {
+		mContext = context;
+	}
+
 	@Override
 	protected Void doInBackground(String... args) {
 		try {
 			String url = args[0];
-			String path = Environment.getExternalStorageDirectory().getPath() + "/Download/";
-			VGet v = new VGet(new URL(url), new File(path));
-			v.download();
+			new VGet(new URL(url), mContext.getFilesDir()).download();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

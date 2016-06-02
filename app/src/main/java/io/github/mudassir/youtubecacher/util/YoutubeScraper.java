@@ -13,7 +13,7 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.mudassir.youtubecacher.obj.VideoMetadata;
+import io.github.mudassir.youtubecacher.model.VideoMetadata;
 
 /**
  * File that scrapes the YouTube homepage for videos

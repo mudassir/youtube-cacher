@@ -48,8 +48,17 @@ public abstract class BaseRecyclerAdapter<E extends Object, T extends BaseRecycl
 	}
 
 	public void swap(final List<E> newData) {
-		data.clear();
-		data.addAll(newData);
+		if (newData == Collections.EMPTY_LIST) {
+			return;
+		}
+
+		if (data == Collections.EMPTY_LIST) {
+			data = newData;
+		} else {
+			data.clear();
+			data.addAll(newData);
+		}
+
 		notifyDataSetChanged();
 	}
 }

@@ -1,4 +1,4 @@
-package io.github.mudassir.youtubecacher.obj;
+package io.github.mudassir.youtubecacher.model;
 
 /**
  * Object for video metadata with builder

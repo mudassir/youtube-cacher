@@ -9,12 +9,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import io.github.mudassir.youtubecacher.model.DownloadListener;
 import io.github.mudassir.youtubecacher.ui.PasteDialog;
 import io.github.mudassir.youtubecacher.ui.CachedFragment;
 import io.github.mudassir.youtubecacher.ui.FragmentPagerAdapter;
 import io.github.mudassir.youtubecacher.ui.HomeFragment;
+import io.github.mudassir.youtubecacher.util.VideoDownloadTask;
+import io.github.mudassir.youtubecacher.util.YoutubeScraper;
 
-public class MainActivity extends AppCompatActivity implements PasteDialog.Listener {
+public class MainActivity extends AppCompatActivity implements DownloadListener, PasteDialog.Listener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,11 +34,31 @@ public class MainActivity extends AppCompatActivity implements PasteDialog.Liste
 
 		// Set up view pager & tabs
 		FragmentPagerAdapter fragmentPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager());
+		final CachedFragment cache = new CachedFragment(); // Need reference
 		fragmentPagerAdapter.addFragment(new HomeFragment());
-		fragmentPagerAdapter.addFragment(new CachedFragment());
+		fragmentPagerAdapter.addFragment(cache);
 
 		ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
 		viewPager.setAdapter(fragmentPagerAdapter);
+		// Add a listener to see when the cached fragment is selected, so that the list of files could be refreshed at that time
+		viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
+
+			@Override
+			public void onPageSelected(int position) {
+				switch (position) {
+					case 1:
+						cache.refresh();
+						break;
+					default:
+						break;
+				}
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int state) { }
+		});
 
 		TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 		tabLayout.setupWithViewPager(viewPager);
@@ -66,6 +89,12 @@ public class MainActivity extends AppCompatActivity implements PasteDialog.Liste
 	@Override
 	public void onPasteReceived(String url) {
 		// TODO verify the string being sent in is valid
-		android.widget.Toast.makeText(this, url, android.widget.Toast.LENGTH_SHORT).show();
+		new VideoDownloadTask(this).execute(url);
+	}
+
+	@Override
+	public void download(String id) {
+		// TODO verify ID somehow
+		new VideoDownloadTask(this).execute(YoutubeScraper.VIDEO_PREFIX_URL + id);
 	}
 }
