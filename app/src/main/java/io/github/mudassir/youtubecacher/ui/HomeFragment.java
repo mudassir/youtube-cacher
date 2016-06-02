@@ -122,6 +122,7 @@ class HomeAdapter extends BaseRecyclerAdapter<VideoMetadata, HomeViewHolder> {
 				});
 		holder.subTitle.setText(info.getChannel() + "\n"
 				+ info.getViews() + " " + holder.channelThumbnail.getContext().getString(R.string.bullet_separator) + " " + info.getPostedTime());
+		holder.duration.setText(info.getDuration());
 	}
 }
 
@@ -131,6 +132,7 @@ class HomeViewHolder extends BaseRecyclerAdapter.BaseViewHolder {
 	ImageView videoThumbnail;
 	ImageView channelThumbnail;
 	TextView subTitle;
+	TextView duration;
 
 	public HomeViewHolder(View view, @Nullable BaseRecyclerAdapter.RecyclerClickListener listener) {
 		super(view, listener);
@@ -138,5 +140,6 @@ class HomeViewHolder extends BaseRecyclerAdapter.BaseViewHolder {
 		videoThumbnail = (ImageView) view.findViewById(R.id.video_thumbnail);
 		channelThumbnail = (ImageView) view.findViewById(R.id.channel_thumbnail);
 		subTitle = (TextView) view.findViewById(R.id.subtitle);
+		duration = (TextView) view.findViewById(R.id.duration);
 	}
 }

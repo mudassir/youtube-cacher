@@ -56,31 +56,34 @@ public class YoutubeScraper {
 										List<VideoMetadata> idList = new ArrayList<>();
 										html = StringEscapeUtils.unescapeJava(html);
 
+										// Extreme brute force parsing
 										for (Element _mhb : Jsoup.parse(html).getElementsByClass("_mhb")) {
-											VideoMetadata.Builder builder = new VideoMetadata.Builder();
+											if (_mhb.attr("data-index").equals("0")) {
+												VideoMetadata.Builder builder = new VideoMetadata.Builder();
 
-											Elements hrefs = _mhb.select("a");
-											builder.channelThumbnail(hrefs.get(0).select("img").attr("src"));
-											builder.id(hrefs.get(1).attr("href").replace(ID_PREFIX, ""));
-											// Stripping title
-											String title = hrefs.get(1).attr("aria-label");
-											title = title.substring(0, title.lastIndexOf(" - "));
-											title = title.substring(0, title.lastIndexOf(" - "));
-											builder.title(title);
+												Elements hrefs = _mhb.select("a");
+												builder.channelThumbnail(hrefs.get(0).select("img").attr("src"));
+												builder.id(hrefs.get(1).attr("href").replace(ID_PREFIX, ""));
+												// Stripping title
+												String title = hrefs.get(1).attr("aria-label");
+												title = title.substring(0, title.lastIndexOf(" - "));
+												title = title.substring(0, title.lastIndexOf(" - "));
+												builder.title(title);
 
-											for (Element _mebb : _mhb.getElementsByClass("_mebb")) {
-												if (!_mebb.attr("aria-label").equals("")) {
-													builder.duration(_mebb.text());
-												} else if (_mebb.text().contains("ago")) {
-													builder.postedTime(_mebb.text());
-												} else if (_mebb.text().contains("views")) {
-													builder.views(_mebb.text());
-												} else if (!_mebb.text().equals(title) && !_mebb.text().equals("CC")) {
-													builder.channel(_mebb.text());
+												for (Element _mebb : _mhb.getElementsByClass("_mebb")) {
+													if (!_mebb.attr("aria-label").equals("")) {
+														builder.duration(_mebb.text());
+													} else if (_mebb.text().contains("ago")) {
+														builder.postedTime(_mebb.text());
+													} else if (_mebb.text().contains("views")) {
+														builder.views(_mebb.text());
+													} else if (!_mebb.text().equals(title) && !_mebb.text().equals("CC")) {
+														builder.channel(_mebb.text());
+													}
 												}
-											}
 
-											idList.add(builder.build());
+												idList.add(builder.build());
+											}
 										}
 
 										receiver.onScrapeReceived(idList);
