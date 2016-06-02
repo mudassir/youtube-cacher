@@ -59,8 +59,8 @@ public class HomeFragment extends Fragment implements BaseRecyclerAdapter.Recycl
 	}
 
 	@Override
-	public void onScrapeReceived(List<VideoMetadata> idList) {
-		mVideoList = idList;
+	public void onScrapeReceived(List<VideoMetadata> infoList) {
+		mVideoList = infoList;
 		mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 		mRecyclerView.setHasFixedSize(true);
 		mRecyclerView.setAdapter(new HomeAdapter(mVideoList, this));

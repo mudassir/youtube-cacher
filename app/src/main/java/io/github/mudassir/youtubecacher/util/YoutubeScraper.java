@@ -24,7 +24,7 @@ import io.github.mudassir.youtubecacher.obj.VideoMetadata;
 public class YoutubeScraper {
 
 	public interface ScrapeReceiver {
-		void onScrapeReceived(List<VideoMetadata> idList);
+		void onScrapeReceived(List<VideoMetadata> infoList);
 	}
 
 	public static final String ID_PREFIX = "/watch?v=";
@@ -45,6 +45,8 @@ public class YoutubeScraper {
 
 			@Override
 			public void onPageFinished(WebView view, String url) {
+				// Using postDelayed() so the WebView can load all the data from the JavaScript;
+				// simply using post() does not work properly.
 				webView.postDelayed(new Runnable() {
 					@Override
 					public void run() {
