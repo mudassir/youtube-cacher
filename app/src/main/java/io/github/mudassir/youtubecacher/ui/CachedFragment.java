@@ -1,6 +1,10 @@
 package io.github.mudassir.youtubecacher.ui;
 
+import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,7 +12,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -89,16 +96,22 @@ class CacheAdapter extends BaseRecyclerAdapter<File, CacheViewHolder> {
 	public void onBindViewHolder(final CacheViewHolder holder, int position) {
 		holder.text.setText(data.get(position).toString());
 		// Thumbnail:
-		// Bitmap bMap = ThumbnailUtils.createVideoThumbnail(file.getAbsolutePath(), MediaStore.Video.Thumbnails.MICRO_KIND);
+//		Bitmap bMap = ThumbnailUtils.createVideoThumbnail(data.get(position).getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND);
+//		holder.img.setImageBitmap(bMap);
+		Glide.with(holder.img.getContext())
+				.load(Uri.fromFile(data.get(position)))
+				.into(holder.img);
 	}
 }
 
 class CacheViewHolder extends BaseRecyclerAdapter.BaseViewHolder {
 
 	TextView text;
+	ImageView img;
 
 	public CacheViewHolder(View view, @Nullable BaseRecyclerAdapter.RecyclerClickListener listener) {
 		super(view, listener);
 		text = (TextView) view.findViewById(R.id.text);
+		img = (ImageView) view.findViewById(R.id.imgting);
 	}
 }
