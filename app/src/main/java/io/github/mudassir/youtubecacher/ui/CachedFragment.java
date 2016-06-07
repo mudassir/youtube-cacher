@@ -95,9 +95,6 @@ class CacheAdapter extends BaseRecyclerAdapter<File, CacheViewHolder> {
 	@Override
 	public void onBindViewHolder(final CacheViewHolder holder, int position) {
 		holder.text.setText(data.get(position).toString());
-		// Thumbnail:
-//		Bitmap bMap = ThumbnailUtils.createVideoThumbnail(data.get(position).getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND);
-//		holder.img.setImageBitmap(bMap);
 		Glide.with(holder.img.getContext())
 				.load(Uri.fromFile(data.get(position)))
 				.into(holder.img);

@@ -55,7 +55,8 @@ public class HomeFragment extends Fragment implements BaseRecyclerAdapter.Recycl
 
 	@Override
 	public void onClick(View view, int position) {
-		((DownloadListener) getActivity()).download(mVideoList.get(position).getId());
+		// Delegate download to MainActivity
+		((DownloadListener) getActivity()).download(YoutubeScraper.VIDEO_PREFIX_URL + mVideoList.get(position).getId());
 	}
 
 	@Override

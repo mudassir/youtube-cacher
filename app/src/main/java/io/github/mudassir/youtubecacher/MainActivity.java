@@ -1,5 +1,8 @@
 package io.github.mudassir.youtubecacher;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -15,9 +18,10 @@ import io.github.mudassir.youtubecacher.ui.CachedFragment;
 import io.github.mudassir.youtubecacher.ui.FragmentPagerAdapter;
 import io.github.mudassir.youtubecacher.ui.HomeFragment;
 import io.github.mudassir.youtubecacher.util.VideoDownloadTask;
-import io.github.mudassir.youtubecacher.util.YoutubeScraper;
 
 public class MainActivity extends AppCompatActivity implements DownloadListener, PasteDialog.Listener {
+
+	public static final int NOTIFICATION_ID = 786;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -86,15 +90,25 @@ public class MainActivity extends AppCompatActivity implements DownloadListener,
 		}
 	}
 
+	/**
+	 * Initiate download from the pasted text being received
+	 * from the dialog in the options menu on the toolbar.
+	 * @param url Link to the video
+	 */
 	@Override
 	public void onPasteReceived(String url) {
-		// TODO verify the string being sent in is valid
-		new VideoDownloadTask(this).execute(url);
+		download(url);
 	}
 
 	@Override
-	public void download(String id) {
-		// TODO verify ID somehow
-		new VideoDownloadTask(this).execute(YoutubeScraper.VIDEO_PREFIX_URL + id);
+	public void download(String url) {
+		// TODO verify url somehow
+		Notification.Builder builder = new Notification.Builder(this);
+		builder.setContentTitle("Downloading video")
+				.setContentText("Download in progress")
+				.setSmallIcon(R.drawable.ic_cached);
+		builder.setProgress(-1, -1, true); // Indeterminate progress
+		((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(NOTIFICATION_ID, builder.build());
+		new VideoDownloadTask(this).execute(url);
 	}
 }
