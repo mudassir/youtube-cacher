@@ -1,7 +1,6 @@
 package io.github.mudassir.youtubecacher.ui;
 
-import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -58,7 +57,6 @@ public class CachedFragment extends Fragment implements BaseRecyclerAdapter.Recy
 	 */
 	public void refresh() {
 		// TODO
-		android.widget.Toast.makeText(getActivity(), "refresh", android.widget.Toast.LENGTH_SHORT).show();
 		File root = getActivity().getFilesDir();
 
 		// Find only MP4 files
@@ -94,21 +92,33 @@ class CacheAdapter extends BaseRecyclerAdapter<File, CacheViewHolder> {
 
 	@Override
 	public void onBindViewHolder(final CacheViewHolder holder, int position) {
-		holder.text.setText(data.get(position).toString());
-		Glide.with(holder.img.getContext())
+		Cursor cursor = MediaStore.Video.query(
+				holder.title.getContext().getContentResolver(),
+				Uri.parse(data.get(position).getAbsolutePath()),
+				new String[]{
+					MediaStore.Video.VideoColumns.DURATION,
+					MediaStore.MediaColumns.SIZE,
+					MediaStore.MediaColumns.TITLE
+				});
+		holder.title.setText(data.get(position).getName());
+		Glide.with(holder.thumbnail.getContext())
 				.load(Uri.fromFile(data.get(position)))
-				.into(holder.img);
+				.into(holder.thumbnail);
 	}
 }
 
 class CacheViewHolder extends BaseRecyclerAdapter.BaseViewHolder {
 
-	TextView text;
-	ImageView img;
+	TextView title;
+	ImageView thumbnail;
+	TextView subtitle;
+	TextView duration;
 
 	public CacheViewHolder(View view, @Nullable BaseRecyclerAdapter.RecyclerClickListener listener) {
 		super(view, listener);
-		text = (TextView) view.findViewById(R.id.text);
-		img = (ImageView) view.findViewById(R.id.imgting);
+		title = (TextView) view.findViewById(R.id.title);
+		thumbnail = (ImageView) view.findViewById(R.id.video_thumbnail);
+		subtitle = (TextView) view.findViewById(R.id.subtitle);
+		duration = (TextView) view.findViewById(R.id.duration);
 	}
 }
