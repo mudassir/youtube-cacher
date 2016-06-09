@@ -94,7 +94,7 @@ public class YoutubeScraper {
 								}
 						);
 					}
-				}, 250);
+				}, 500);
 			}
 		});
 

@@ -75,7 +75,15 @@ public class CachedFragment extends Fragment implements BaseRecyclerAdapter.Recy
 
 	@Override
 	public void onClick(View view, int position) {
-		// TODO play selected video
+		if (view.getId() == R.id.delete) {
+			boolean delete = mFiles.get(position).getAbsoluteFile().delete();
+			if (delete) {
+				mFiles.remove(position);
+				mAdapter.remove(position);
+			}
+		} else {
+			// TODO play selected video
+		}
 	}
 }
 
@@ -104,6 +112,8 @@ class CacheAdapter extends BaseRecyclerAdapter<File, CacheViewHolder> {
 		Glide.with(holder.thumbnail.getContext())
 				.load(Uri.fromFile(data.get(position)))
 				.into(holder.thumbnail);
+		holder.subtitle.setText("-- kB");
+		holder.duration.setText("88:88:88");
 	}
 }
 
@@ -114,11 +124,18 @@ class CacheViewHolder extends BaseRecyclerAdapter.BaseViewHolder {
 	TextView subtitle;
 	TextView duration;
 
-	public CacheViewHolder(View view, @Nullable BaseRecyclerAdapter.RecyclerClickListener listener) {
+	public CacheViewHolder(View view, final BaseRecyclerAdapter.RecyclerClickListener listener) {
 		super(view, listener);
 		title = (TextView) view.findViewById(R.id.title);
 		thumbnail = (ImageView) view.findViewById(R.id.video_thumbnail);
 		subtitle = (TextView) view.findViewById(R.id.subtitle);
 		duration = (TextView) view.findViewById(R.id.duration);
+
+		view.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				listener.onClick(v, getAdapterPosition());
+			}
+		});
 	}
 }

@@ -48,11 +48,9 @@ public abstract class BaseRecyclerAdapter<E extends Object, T extends BaseRecycl
 	}
 
 	public void swap(final List<E> newData) {
-		if (newData == Collections.EMPTY_LIST) {
-			return;
-		}
-
-		if (data == Collections.EMPTY_LIST) {
+		if (newData == Collections.emptyList()) {
+			data = Collections.emptyList();
+		} else if (data == Collections.emptyList()) {
 			data = newData;
 		} else {
 			data.clear();
@@ -60,5 +58,11 @@ public abstract class BaseRecyclerAdapter<E extends Object, T extends BaseRecycl
 		}
 
 		notifyDataSetChanged();
+	}
+
+	public void remove(int position) {
+		data.remove(position);
+		notifyItemRemoved(position);
+		notifyItemRangeChanged(position, data.size());
 	}
 }
