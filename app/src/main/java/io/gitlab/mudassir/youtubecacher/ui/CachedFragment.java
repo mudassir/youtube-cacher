@@ -1,5 +1,6 @@
 package io.gitlab.mudassir.youtubecacher.ui;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import io.gitlab.mudassir.youtubecacher.PlayerActivity;
 import io.gitlab.mudassir.youtubecacher.R;
 
 /**
@@ -82,7 +84,9 @@ public class CachedFragment extends Fragment implements BaseRecyclerAdapter.Recy
 				mAdapter.remove(position);
 			}
 		} else {
-			// TODO play selected video
+			Intent intent = new Intent(getActivity(), PlayerActivity.class);
+			intent.putExtra(PlayerActivity.VIDEO_FILE, mFiles.get(position));
+			startActivity(intent);
 		}
 	}
 }
