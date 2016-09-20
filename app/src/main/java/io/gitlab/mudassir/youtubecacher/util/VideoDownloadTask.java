@@ -1,4 +1,4 @@
-package io.github.mudassir.youtubecacher.util;
+package io.gitlab.mudassir.youtubecacher.util;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -9,8 +9,8 @@ import com.github.axet.vget.VGet;
 
 import java.net.URL;
 
-import io.github.mudassir.youtubecacher.MainActivity;
-import io.github.mudassir.youtubecacher.R;
+import io.gitlab.mudassir.youtubecacher.MainActivity;
+import io.gitlab.mudassir.youtubecacher.R;
 
 /**
  * Basic AsyncTask that downloads a specified video.

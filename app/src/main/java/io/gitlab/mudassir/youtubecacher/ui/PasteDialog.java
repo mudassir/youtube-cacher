@@ -1,4 +1,4 @@
-package io.github.mudassir.youtubecacher.ui;
+package io.gitlab.mudassir.youtubecacher.ui;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import io.github.mudassir.youtubecacher.R;
+import io.gitlab.mudassir.youtubecacher.R;
 
 /**
  * Dialog to prompt user to enter the URL for the video

@@ -1,4 +1,4 @@
-package io.github.mudassir.youtubecacher.ui;
+package io.gitlab.mudassir.youtubecacher.ui;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -23,10 +23,10 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import java.util.List;
 
-import io.github.mudassir.youtubecacher.R;
-import io.github.mudassir.youtubecacher.model.DownloadListener;
-import io.github.mudassir.youtubecacher.model.VideoMetadata;
-import io.github.mudassir.youtubecacher.util.YoutubeScraper;
+import io.gitlab.mudassir.youtubecacher.R;
+import io.gitlab.mudassir.youtubecacher.model.DownloadListener;
+import io.gitlab.mudassir.youtubecacher.model.VideoMetadata;
+import io.gitlab.mudassir.youtubecacher.util.YoutubeScraper;
 
 /**
  * First fragment that the user sees (i.e., the home screen)

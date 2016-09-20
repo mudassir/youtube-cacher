@@ -1,4 +1,4 @@
-package io.github.mudassir.youtubecacher.ui;
+package io.gitlab.mudassir.youtubecacher.ui;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

@@ -1,4 +1,4 @@
-package io.github.mudassir.youtubecacher.util;
+package io.gitlab.mudassir.youtubecacher.util;
 
 import android.content.Context;
 import android.webkit.ValueCallback;
@@ -13,7 +13,7 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.mudassir.youtubecacher.model.VideoMetadata;
+import io.gitlab.mudassir.youtubecacher.model.VideoMetadata;
 
 /**
  * File that scrapes the YouTube homepage for videos

@@ -1,4 +1,4 @@
-package io.github.mudassir.youtubecacher.ui;
+package io.gitlab.mudassir.youtubecacher.ui;
 
 import android.database.Cursor;
 import android.net.Uri;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import io.github.mudassir.youtubecacher.R;
+import io.gitlab.mudassir.youtubecacher.R;
 
 /**
  * Fragment showing the files that are downloaded

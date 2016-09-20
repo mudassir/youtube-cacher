@@ -1,4 +1,4 @@
-package io.github.mudassir.youtubecacher.ui;
+package io.gitlab.mudassir.youtubecacher.ui;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

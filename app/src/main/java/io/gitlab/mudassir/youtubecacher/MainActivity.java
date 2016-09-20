@@ -1,4 +1,4 @@
-package io.github.mudassir.youtubecacher;
+package io.gitlab.mudassir.youtubecacher;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -12,12 +12,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import io.github.mudassir.youtubecacher.model.DownloadListener;
-import io.github.mudassir.youtubecacher.ui.PasteDialog;
-import io.github.mudassir.youtubecacher.ui.CachedFragment;
-import io.github.mudassir.youtubecacher.ui.FragmentPagerAdapter;
-import io.github.mudassir.youtubecacher.ui.HomeFragment;
-import io.github.mudassir.youtubecacher.util.VideoDownloadTask;
+import io.gitlab.mudassir.youtubecacher.model.DownloadListener;
+import io.gitlab.mudassir.youtubecacher.ui.PasteDialog;
+import io.gitlab.mudassir.youtubecacher.ui.CachedFragment;
+import io.gitlab.mudassir.youtubecacher.ui.FragmentPagerAdapter;
+import io.gitlab.mudassir.youtubecacher.ui.HomeFragment;
+import io.gitlab.mudassir.youtubecacher.util.VideoDownloadTask;
 
 public class MainActivity extends AppCompatActivity implements DownloadListener, PasteDialog.Listener {
 

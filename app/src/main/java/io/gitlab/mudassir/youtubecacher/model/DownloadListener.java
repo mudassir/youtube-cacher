@@ -1,4 +1,4 @@
-package io.github.mudassir.youtubecacher.model;
+package io.gitlab.mudassir.youtubecacher.model;
 
 /**
  * Callback to the MainActivity to initiate download
