@@ -50,7 +50,7 @@ public class HomeFragment extends Fragment implements BaseRecyclerAdapter.Recycl
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		YoutubeScraper.scrape(getActivity(), mWebView, this);
+//		YoutubeScraper.scrape(getActivity(), mWebView, this);
 	}
 
 	@Override
