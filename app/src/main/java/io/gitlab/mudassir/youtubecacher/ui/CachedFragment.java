@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -115,6 +116,8 @@ class CacheAdapter extends BaseRecyclerAdapter<File, CacheViewHolder> {
 		holder.title.setText(data.get(position).getName());
 		Glide.with(holder.thumbnail.getContext())
 				.load(Uri.fromFile(data.get(position)))
+				.diskCacheStrategy(DiskCacheStrategy.ALL)
+				.skipMemoryCache(false)
 				.into(holder.thumbnail);
 		holder.subtitle.setText("-- kB");
 		holder.duration.setText("88:88:88");
