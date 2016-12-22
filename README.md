@@ -1,5 +1,5 @@
-#Youtube Cacher
-An app which allows you to download and play YouTube videos.
+# Youtube Cacher
+An Android app which allows you to download and play YouTube videos.
 
 
 [<img src="https://f-droid.org/badge/get-it-on.png"
@@ -7,7 +7,7 @@ An app which allows you to download and play YouTube videos.
       height="80">](https://f-droid.org/app/io.gitlab.mudassir.youtubecacher)
 
 
-##License
+## License
 ```
 Copyright (c) 2016, Mudassir Chughtai
 All rights reserved.
