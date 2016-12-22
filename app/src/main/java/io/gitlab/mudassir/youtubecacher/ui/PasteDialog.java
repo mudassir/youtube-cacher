@@ -1,6 +1,8 @@
 package io.gitlab.mudassir.youtubecacher.ui;
 
 import android.app.Dialog;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -29,11 +31,19 @@ public class PasteDialog extends DialogFragment {
 		View root = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_paste, null);
 		final EditText editText = (EditText) root.findViewById(R.id.paste_text);
 
+		// If the user has copied a URL, prepopulate it in the editText
+		ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+		if (clipboard.hasPrimaryClip() && clipboard.getPrimaryClipDescription().hasMimeType("text/plain")) {
+			String pasteText = clipboard.getPrimaryClip().getItemAt(0).getText().toString();
+			if (pasteText.contains("http") || pasteText.contains("youtube") || pasteText.contains("youtu.be")) {
+				editText.setText(pasteText);
+			}
+		}
+
 		final AlertDialog dialog = new AlertDialog.Builder(getActivity())
 				.setView(root)
 				.setPositiveButton(R.string.download, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-//						android.widget.Toast.makeText(getActivity(), editText.getText(), android.widget.Toast.LENGTH_SHORT).show();
 						((Listener) getActivity()).onPasteReceived(editText.getText().toString());
 					}
 				})
