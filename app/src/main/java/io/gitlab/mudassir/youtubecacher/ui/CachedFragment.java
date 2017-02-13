@@ -1,7 +1,9 @@
 package io.gitlab.mudassir.youtubecacher.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -23,6 +25,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.gitlab.mudassir.youtubecacher.PlayerActivity;
 import io.gitlab.mudassir.youtubecacher.R;
@@ -105,22 +108,28 @@ class CacheAdapter extends BaseRecyclerAdapter<File, CacheViewHolder> {
 
 	@Override
 	public void onBindViewHolder(final CacheViewHolder holder, int position) {
-		Cursor cursor = MediaStore.Video.query(
-				holder.title.getContext().getContentResolver(),
-				Uri.parse(data.get(position).getAbsolutePath()),
-				new String[]{
-					MediaStore.Video.VideoColumns.DURATION,
-					MediaStore.MediaColumns.SIZE,
-					MediaStore.MediaColumns.TITLE
-				});
-		holder.title.setText(data.get(position).getName());
-		Glide.with(holder.thumbnail.getContext())
-				.load(Uri.fromFile(data.get(position)))
-				.diskCacheStrategy(DiskCacheStrategy.ALL)
-				.skipMemoryCache(false)
+
+		File video = data.get(position);
+		Context context = holder.title.getContext();
+
+		// Get duration of video
+		MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+		retriever.setDataSource(context, Uri.fromFile(video.getAbsoluteFile()));
+		String duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+		long time = Long.parseLong(duration);
+
+		holder.title.setText(video.getName());
+		Glide.with(context)
+				.load(Uri.fromFile(video.getAbsoluteFile()))
 				.into(holder.thumbnail);
-		holder.subtitle.setText("-- kB");
-		holder.duration.setText("88:88:88");
+		// Divide by 1024^2 for B to MB
+		holder.subtitle.setText(video.length() / 1024 / 1024 + " MB");
+		// There's probably an easier way for this:
+		holder.duration.setText(String.format(
+				"%s:%s",
+				time / 1000L / 60L % 60, // Minutes
+				time / 1000L % 60) // Seconds
+		);
 	}
 }
 
@@ -138,11 +147,6 @@ class CacheViewHolder extends BaseRecyclerAdapter.BaseViewHolder {
 		subtitle = (TextView) view.findViewById(R.id.subtitle);
 		duration = (TextView) view.findViewById(R.id.duration);
 
-		view.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				listener.onClick(v, getAdapterPosition());
-			}
-		});
+		view.findViewById(R.id.delete).setOnClickListener(v -> listener.onClick(v, getAdapterPosition()));
 	}
 }
