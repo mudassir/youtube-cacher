@@ -1,48 +1,60 @@
 package io.gitlab.mudassir.youtubecacher.ui;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
-
-import java.util.List;
+import android.webkit.WebViewClient;
 
 import io.gitlab.mudassir.youtubecacher.R;
 import io.gitlab.mudassir.youtubecacher.model.DownloadListener;
-import io.gitlab.mudassir.youtubecacher.model.VideoMetadata;
-import io.gitlab.mudassir.youtubecacher.util.YoutubeScraper;
+import io.gitlab.mudassir.youtubecacher.util.Common;
 
 /**
  * First fragment that the user sees (i.e., the home screen)
  */
-public class HomeFragment extends Fragment implements BaseRecyclerAdapter.RecyclerClickListener, YoutubeScraper.ScrapeReceiver {
+public class HomeFragment extends Fragment {
 
-	private List<VideoMetadata> mVideoList;
-	private RecyclerView mRecyclerView;
 	private WebView mWebView;
 
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View root = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_home, container, false);
-		mRecyclerView = (RecyclerView) root.findViewById(R.id.home_recycler);
+
 		mWebView = (WebView) root.findViewById(R.id.home_web_view);
+		mWebView.getSettings().setJavaScriptEnabled(true);
+
+		mWebView.setWebViewClient(new WebViewClient() {
+			/**
+			 * This method intendeds to intercept the video URL that loads from a user click.
+			 * Since each request is received individually, the request is checked to see if
+			 * it has a gesture associated with it (i.e., it was clicked). If so, the url
+			 * must be checked to make sure it is not a search url. If it is a video url,
+			 * it is delegated to the main activity where the download is processed.
+			 */
+			@Override
+			public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+				// The url should have a value for the parameter v (i.e., youtube.com/watch?v=VIDEOID)
+				String videoId = request.getUrl().getQueryParameter("v");
+				if (request.hasGesture() && !TextUtils.isEmpty(videoId)) {
+					((DownloadListener) getActivity()).download(Common.VIDEO_PREFIX_URL + videoId);
+					/* Reset web view
+					 *
+					 * Can't call loadUrl() directly on the view because of some 8 year old bug,
+					 * so posting this runnable is a workaround
+					 */
+					view.getHandler().post(() -> view.loadUrl("https://m.youtube.com/"));
+				}
+				return null;
+			}
+		});
 
 		return root;
 	}
@@ -50,97 +62,6 @@ public class HomeFragment extends Fragment implements BaseRecyclerAdapter.Recycl
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-//		YoutubeScraper.scrape(getActivity(), mWebView, this);
-	}
-
-	@Override
-	public void onClick(View view, int position) {
-		// Delegate download to MainActivity
-		((DownloadListener) getActivity()).download(YoutubeScraper.VIDEO_PREFIX_URL + mVideoList.get(position).getId());
-	}
-
-	@Override
-	public void onScrapeReceived(List<VideoMetadata> infoList) {
-		mVideoList = infoList;
-		mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-		mRecyclerView.setHasFixedSize(true);
-		mRecyclerView.setAdapter(new HomeAdapter(mVideoList, this));
-
-		// Add the divider
-		mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-			@Override
-			public void onDraw(final Canvas c, final RecyclerView parent, final RecyclerView.State state) {
-				final Drawable divider = ResourcesCompat.getDrawable(getResources(), R.drawable.divider, null);
-
-				// Don't show the divider underneath the first and last cells
-				for (int i = 0; i < parent.getChildCount() - 1; i++) {
-					final View child = parent.getChildAt(i);
-					divider.setBounds(0, child.getBottom(), parent.getWidth(), child.getBottom() + divider.getIntrinsicHeight());
-					divider.draw(c);
-				}
-
-				/*
-				 * In the event that padding must be preserved:
-				 * final int padding = (int) getResources().getDimension(R.dimen.dividerPadding);
-				 * final int left = parent.getPaddingLeft() + padding;
-				 * final int right = parent.getWidth() - parent.getPaddingRight() + padding;
-				*/
-			}
-		});
-	}
-}
-
-class HomeAdapter extends BaseRecyclerAdapter<VideoMetadata, HomeViewHolder> {
-
-	public HomeAdapter(@Nullable List<VideoMetadata> data, @Nullable RecyclerClickListener listener) {
-		super(data, listener);
-	}
-
-	@Override
-	public HomeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		return new HomeViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_home, parent, false), listener);
-	}
-
-	@Override
-	public void onBindViewHolder(final HomeViewHolder holder, int position) {
-		VideoMetadata info = data.get(position);
-		holder.title.setText(info.getTitle());
-		Glide.with(holder.videoThumbnail.getContext())
-				.load(YoutubeScraper.THUMBNAIL_PREFIX_URL + info.getId() + YoutubeScraper.THUMBNAIL_SUFFIX_URL)
-				.into(holder.videoThumbnail);
-		Glide.with(holder.channelThumbnail.getContext())
-				.load(info.getChannelThumbnail())
-				.asBitmap()
-				.centerCrop()
-				.into(new BitmapImageViewTarget(holder.channelThumbnail) {
-					@Override
-					protected void setResource(Bitmap resource) {
-						RoundedBitmapDrawable circularBitmapDrawable =
-								RoundedBitmapDrawableFactory.create(holder.channelThumbnail.getContext().getResources(), resource);
-						circularBitmapDrawable.setCircular(true);
-						holder.channelThumbnail.setImageDrawable(circularBitmapDrawable);
-					}
-				});
-		holder.subTitle.setText(info.getChannel() + "\n"
-				+ info.getViews() + " " + holder.channelThumbnail.getContext().getString(R.string.bullet_separator) + " " + info.getPostedTime());
-		holder.duration.setText(info.getDuration());
-	}
-}
-
-class HomeViewHolder extends BaseRecyclerAdapter.BaseViewHolder {
-
-	TextView title;
-	ImageView videoThumbnail;
-	ImageView channelThumbnail;
-	TextView subTitle;
-	TextView duration;
-
-	public HomeViewHolder(View view, @Nullable BaseRecyclerAdapter.RecyclerClickListener listener) {
-		super(view, listener);
-		title = (TextView) view.findViewById(R.id.title);
-		videoThumbnail = (ImageView) view.findViewById(R.id.video_thumbnail);
-		channelThumbnail = (ImageView) view.findViewById(R.id.channel_thumbnail);
-		subTitle = (TextView) view.findViewById(R.id.subtitle);
-		duration = (TextView) view.findViewById(R.id.duration);
+		mWebView.loadUrl("https://m.youtube.com/");
 	}
 }
