@@ -1,5 +1,5 @@
 # Youtube Cacher
-An Android app which allows you to download and play YouTube videos.
+An Android app that allows you to download and play YouTube videos.
 
 
 [<img src="https://f-droid.org/badge/get-it-on.png"
@@ -9,7 +9,7 @@ An Android app which allows you to download and play YouTube videos.
 
 ## License
 ```
-Copyright (c) 2016, Mudassir Chughtai
+Copyright (c) 2016, 2017, Mudassir Chughtai
 All rights reserved.
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
