@@ -3,11 +3,13 @@ package io.gitlab.mudassir.youtubecacher;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements DownloadListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		// Deep link
+		onNewIntent(getIntent());
 
 		/*
 		 * Setting toolbar manually so it plays nicely with tabLayout. To
@@ -68,6 +72,15 @@ public class MainActivity extends AppCompatActivity implements DownloadListener,
 		tabLayout.setupWithViewPager(viewPager);
 		tabLayout.getTabAt(0).setIcon(R.drawable.ic_home);
 		tabLayout.getTabAt(1).setIcon(R.drawable.ic_cached);
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		if (Intent.ACTION_VIEW.equals(intent.getAction()) && !TextUtils.isEmpty(intent.getDataString())) {
+			download(intent.getDataString());
+		}
+
 	}
 
 	@Override
