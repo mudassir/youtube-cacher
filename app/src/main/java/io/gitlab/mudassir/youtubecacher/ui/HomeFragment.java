@@ -18,6 +18,8 @@ import io.gitlab.mudassir.youtubecacher.util.Common;
 
 /**
  * First fragment that the user sees (i.e., the home screen)
+ * Contains a WebView which points to youtube.com and all
+ * clicks are intercepted for download.
  */
 public class HomeFragment extends Fragment {
 
@@ -50,7 +52,12 @@ public class HomeFragment extends Fragment {
 					 * Can't call loadUrl() directly on the view because of some 8 year old bug,
 					 * so posting this runnable is a workaround
 					 */
-					view.getHandler().post(() -> view.loadUrl("https://m.youtube.com/"));
+					view.getHandler().post(new Runnable() {
+						@Override
+						public void run() {
+							view.loadUrl("https://m.youtube.com/");
+						}
+					});
 				}
 				return null;
 			}

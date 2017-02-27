@@ -12,6 +12,7 @@ import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveVideoTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
@@ -29,6 +30,7 @@ public class PlayerActivity extends AppCompatActivity {
 
 	public static final String VIDEO_FILE = "io.gitlab.mudassir.youtubecacher.video-file";
 
+	private File mAudio;
 	private File mVideo;
 	private SimpleExoPlayer mPlayer;
 	private SimpleExoPlayerView mPlayerView;
@@ -39,7 +41,9 @@ public class PlayerActivity extends AppCompatActivity {
 
 		setContentView(R.layout.activity_player);
 		mPlayerView = (SimpleExoPlayerView) findViewById(R.id.player);
+		// TODO find file paths more elegantly
 		mVideo = (File) getIntent().getExtras().get(VIDEO_FILE);
+		mAudio = new File(mVideo.getAbsolutePath().replaceAll("mp4","webm"));
 
 		// Creating the player
 		BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
@@ -51,12 +55,16 @@ public class PlayerActivity extends AppCompatActivity {
 		mPlayerView.setPlayer(mPlayer);
 
 		// Preparing the player
-		final Uri uri = Uri.parse(mVideo.getAbsolutePath());
+		// Video is in mp4 file, audio is in webm file
+		Uri videoUri = Uri.parse(mVideo.getAbsolutePath());
+		Uri audioUri = Uri.parse(mAudio.getAbsolutePath());
 		DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this, Util.getUserAgent(this, "io.gitlab.mudassir.youtubecacher"));
 		ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-		MediaSource videoSource = new ExtractorMediaSource(uri, dataSourceFactory, extractorsFactory, null, null);
+		MediaSource videoSource = new ExtractorMediaSource(videoUri, dataSourceFactory, extractorsFactory, null, null);
+		MediaSource audioSource = new ExtractorMediaSource(audioUri, dataSourceFactory, extractorsFactory, null, null);
+		MergingMediaSource mergedVideo = new MergingMediaSource(videoSource, audioSource);
 
-		mPlayer.prepare(videoSource);
+		mPlayer.prepare(mergedVideo);
 		mPlayer.setPlayWhenReady(true);
 	}
 
@@ -77,7 +85,9 @@ public class PlayerActivity extends AppCompatActivity {
 	}
 
 	private void releasePlayer() {
-		mPlayer.release();
-		mPlayer = null;
+		if (mPlayer != null) {
+			mPlayer.release();
+			mPlayer = null;
+		}
 	}
 }

@@ -2,11 +2,9 @@ package io.gitlab.mudassir.youtubecacher.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,14 +16,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import io.gitlab.mudassir.youtubecacher.PlayerActivity;
 import io.gitlab.mudassir.youtubecacher.R;
@@ -62,8 +58,7 @@ public class CachedFragment extends Fragment implements BaseRecyclerAdapter.Recy
 	 * Loads a list of files that are in the internal app storage directory
 	 */
 	public void refresh() {
-		// TODO
-		File root = getActivity().getFilesDir();
+		File root = getActivity().getExternalCacheDir();
 
 		// Find only MP4 files
 		File[] videos = root.listFiles(new FilenameFilter() {
@@ -82,6 +77,12 @@ public class CachedFragment extends Fragment implements BaseRecyclerAdapter.Recy
 	@Override
 	public void onClick(View view, int position) {
 		if (view.getId() == R.id.delete) {
+			// TODO handle delete more elegantly
+			// Delete audio webm if it exists
+			File audio = new File(mFiles.get(position).getAbsolutePath().replaceAll("mp4","webm"));
+			if (audio.exists()) {
+				audio.delete();
+			}
 			boolean delete = mFiles.get(position).getAbsoluteFile().delete();
 			if (delete) {
 				mFiles.remove(position);

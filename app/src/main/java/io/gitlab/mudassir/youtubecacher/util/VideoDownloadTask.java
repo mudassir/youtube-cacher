@@ -32,7 +32,7 @@ public class VideoDownloadTask extends AsyncTask<String, Void, Void> {
 	protected Void doInBackground(String... args) {
 		try {
 			String url = args[0];
-			new VGet(new URL(url), mContext.getFilesDir()).download();
+			new VGet(new URL(url), mContext.getExternalCacheDir()).download();
 		} catch (Exception e) {
 			// End the task
 			cancel(true);
